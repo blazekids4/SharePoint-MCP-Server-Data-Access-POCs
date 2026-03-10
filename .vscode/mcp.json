@@ -1,0 +1,21 @@
+{
+  "servers": {
+    "vantiva": {
+      "type": "stdio",
+      "command": "${workspaceFolder}/venv/Scripts/python.exe",
+      "args": ["${workspaceFolder}/server.py"],
+      "envFile": "${workspaceFolder}/.env"
+    },
+    "odsp-remote": {
+      "type": "streamable-http",
+      "url": "https://agent365.svc.cloud.microsoft/agents/tenants/${input:tenant_id}/servers/mcp_ODSPRemoteServer"
+    }
+  },
+  "inputs": [
+    {
+      "id": "tenant_id",
+      "type": "promptString",
+      "description": "Your Microsoft Entra tenant ID"
+    }
+  ]
+}
