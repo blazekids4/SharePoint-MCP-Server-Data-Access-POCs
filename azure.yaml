@@ -1,0 +1,12 @@
+# azure.yaml — Azure Developer CLI project configuration
+name: vantiva-mcp-server
+metadata:
+  template: vantiva-mcp-server
+
+services:
+  api:
+    project: .
+    language: py
+    host: containerapp
+    docker:
+      path: ./Dockerfile

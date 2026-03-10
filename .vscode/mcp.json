@@ -1,6 +1,10 @@
 {
   "servers": {
     "vantiva": {
+      "type": "streamable-http",
+      "url": "https://vantiva-mcp-4cqr7kxpw4idy.yellowtree-87475ebd.eastus.azurecontainerapps.io/mcp"
+    },
+    "vantiva-local": {
       "type": "stdio",
       "command": "${workspaceFolder}/venv/Scripts/python.exe",
       "args": ["${workspaceFolder}/server.py"],

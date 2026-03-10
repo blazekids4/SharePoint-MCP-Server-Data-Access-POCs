@@ -12,7 +12,12 @@ import msal
 from mcp.server.fastmcp import FastMCP
 
 # Create the MCP server (name appears in VS Code when discovering tools)
-mcp = FastMCP("vantiva")
+transport = os.environ.get("MCP_TRANSPORT", "stdio")
+mcp = FastMCP(
+    "vantiva",
+    host="0.0.0.0" if transport == "streamable-http" else "127.0.0.1",
+    port=int(os.environ.get("PORT", "8080")),
+)
 
 
 # ── SharePoint configuration (set via environment variables) ─────────────────
@@ -214,12 +219,13 @@ def list_sharepoint_folder(site_name: str, folder_path: str = "") -> str:
 def get_sharepoint_file_content(site_name: str, file_path: str) -> str:
     """
     Read the text content of a file from a SharePoint document library.
-    Works with .txt, .md, .json, .csv, .xml, .html and similar text files.
+    Works with text files (.txt, .md, .json, .csv, .xml, .html) and PDFs.
+    For PDFs, extracts all text content using PyMuPDF.
 
     Args:
         site_name: The SharePoint site name (e.g. "DeveloperCentral").
         file_path: Path to the file inside the default document library
-                   (e.g. "API Documentation/REST API Guide.md").
+                   (e.g. "API Documentation/REST API Guide.pdf").
     """
     token = _get_graph_token()
     headers = {"Authorization": f"Bearer {token}"}
@@ -238,9 +244,26 @@ def get_sharepoint_file_content(site_name: str, file_path: str) -> str:
         content_url = f"https://graph.microsoft.com/v1.0/drives/{drive_id}/root:/{file_path}:/content"
         content_resp = client.get(content_url, headers=headers, follow_redirects=True)
         content_resp.raise_for_status()
-
+        
+        # Check if it's a PDF
+        if file_path.lower().endswith('.pdf'):
+            import io
+            import fitz  # PyMuPDF
+            
+            # Open PDF from bytes
+            pdf_document = fitz.open(stream=content_resp.content, filetype="pdf")
+            text = ""
+            
+            # Extract text from each page
+            for page_num in range(pdf_document.page_count):
+                page = pdf_document[page_num]
+                text += page.get_text() + "\n"
+            
+            pdf_document.close()
+            return text.strip()
+        
         return content_resp.text
 
 
 if __name__ == "__main__":
-    mcp.run(transport="stdio")
+    mcp.run(transport=transport)

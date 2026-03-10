@@ -1,0 +1,8 @@
+mcp[cli]>=1.26.0
+msal>=1.35.0
+httpx>=0.28.0
+uvicorn>=0.41.0
+python-dotenv>=1.0.0
+
+pyMuPDF
+

@@ -1,0 +1,3 @@
+azd env get-values
+
+az containerapp logs show --name vantiva-mcp-4cqr7kxpw4idy --resource-group rg-vantiva-mcp --type console --follow
