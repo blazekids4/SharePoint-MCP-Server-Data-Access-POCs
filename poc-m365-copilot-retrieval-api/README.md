@@ -1,5 +1,7 @@
 # POC using M365 Copilot Retrieval API
 
+***WORK IN PROGRES***
+
 ## Documentation
 
 https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/api/ai-services/retrieval/overview
