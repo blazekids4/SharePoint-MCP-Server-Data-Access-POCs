@@ -1,4 +1,4 @@
-// Azure Container Apps environment and app for the Vantiva MCP Server
+// Azure Container Apps environment and app for the SharePoint MCP Server
 param location string
 param resourceToken string
 
@@ -51,7 +51,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' =
 
 // Container App
 resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
-  name: 'vantiva-mcp-${resourceToken}'
+  name: 'sharepoint-mcp-${resourceToken}'
   location: location
   tags: {
     'azd-service-name': 'api'
@@ -82,7 +82,7 @@ resource containerApp 'Microsoft.App/containerApps@2024-03-01' = {
     template: {
       containers: [
         {
-          name: 'vantiva-mcp-server'
+          name: 'sharepoint-mcp-server'
           // azd will replace this image reference during deployment
           image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
           resources: {

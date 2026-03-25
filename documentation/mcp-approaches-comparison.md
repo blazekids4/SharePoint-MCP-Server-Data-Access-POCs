@@ -21,7 +21,7 @@ There are two distinct ways to give GitHub Copilot access to SharePoint data via
 // .vscode/mcp.json
 {
   "servers": {
-    "vantiva": {
+    "sharepoint-mcp": {
       "type": "stdio",
       "command": "${workspaceFolder}/venv/Scripts/python.exe",
       "args": ["${workspaceFolder}/server.py"],
@@ -157,7 +157,7 @@ The custom local server remains valuable for:
 ```json
 {
   "servers": {
-    "vantiva-custom": {
+    "sharepoint-mcp-custom": {
       "type": "stdio",
       "command": "python",
       "args": ["server.py"],

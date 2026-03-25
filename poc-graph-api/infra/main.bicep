@@ -1,4 +1,4 @@
-// Main Bicep template for the Vantiva MCP Server on Azure Container Apps
+// Main Bicep template for the SharePoint MCP Server on Azure Container Apps
 targetScope = 'subscription'
 
 @minLength(1)

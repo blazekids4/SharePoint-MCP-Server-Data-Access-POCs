@@ -1,5 +1,5 @@
 """
-Vantiva MCP Server
+SharePoint MCP Server
 -------------------
 A Model Context Protocol server that exposes tools to GitHub Copilot.
 Add your own @mcp.tool() functions below to give Copilot new capabilities.
@@ -14,7 +14,7 @@ from mcp.server.fastmcp import FastMCP
 # Create the MCP server (name appears in VS Code when discovering tools)
 transport = os.environ.get("MCP_TRANSPORT", "stdio")
 mcp = FastMCP(
-    "vantiva",
+    "sharepoint-mcp",
     host="0.0.0.0" if transport == "streamable-http" else "127.0.0.1",
     port=int(os.environ.get("PORT", "8080")),
 )
@@ -45,7 +45,7 @@ def _get_graph_token() -> str:
 @mcp.tool()
 def greet(name: str) -> str:
     """Say hello to someone. Use this when the user wants a friendly greeting."""
-    return f"Hello, {name}! Welcome to the Vantiva MCP server."
+    return f"Hello, {name}! Welcome to the SharePoint MCP server."
 
 
 # ── Example tool: add_numbers ────────────────────────────────────────────────

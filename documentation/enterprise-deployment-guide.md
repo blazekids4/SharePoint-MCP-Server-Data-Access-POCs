@@ -31,7 +31,7 @@ Developer Machine
 ```json
 {
   "servers": {
-    "vantiva": {
+    "sharepoint-mcp": {
       "type": "stdio",
       "command": "${workspaceFolder}/venv/Scripts/python.exe",
       "args": ["${workspaceFolder}/server.py"],
@@ -80,7 +80,7 @@ if __name__ == "__main__":
 ```json
 {
   "servers": {
-    "vantiva": {
+    "sharepoint-mcp": {
       "type": "streamable-http",
       "url": "https://mcp.internal.yourcompany.com/mcp"
     }
@@ -203,7 +203,7 @@ The server requires a static API key in the request headers. All developers use 
 ```json
 {
   "servers": {
-    "vantiva": {
+    "sharepoint-mcp": {
       "type": "streamable-http",
       "url": "https://mcp.internal.yourcompany.com/mcp",
       "headers": {

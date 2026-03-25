@@ -1,7 +1,7 @@
 # azure.yaml — Azure Developer CLI project configuration
-name: vantiva-mcp-server
+name: sharepoint-mcp-server
 metadata:
-  template: vantiva-mcp-server
+  template: sharepoint-mcp-server
 
 services:
   api:

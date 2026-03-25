@@ -1,6 +1,6 @@
-# Hosting the Vantiva MCP Server on Azure — End-to-End Guide
+# Hosting the SharePoint MCP Server on Azure — End-to-End Guide
 
-This document walks through everything we did to take the Vantiva MCP server from a local Python process running on a developer machine to a hosted service on Azure Container Apps that any developer can connect to from GitHub Copilot — no Python, no secrets, and no local setup required.
+This document walks through everything we did to take the SharePoint MCP Server from a local Python process running on a developer machine to a hosted service on Azure Container Apps that any developer can connect to from GitHub Copilot — no Python, no secrets, and no local setup required.
 
 ---
 
@@ -25,7 +25,7 @@ The original `mcp.json` configuration:
 ```json
 {
   "servers": {
-    "vantiva": {
+    "sharepoint-mcp": {
       "type": "stdio",
       "command": "${workspaceFolder}/venv/Scripts/python.exe",
       "args": ["${workspaceFolder}/server.py"],
@@ -60,7 +60,7 @@ We updated `server.py` to read the transport mode from an environment variable, 
 # Create the MCP server (name appears in VS Code when discovering tools)
 transport = os.environ.get("MCP_TRANSPORT", "stdio")
 mcp = FastMCP(
-    "vantiva",
+    "sharepoint-mcp",
     host="0.0.0.0" if transport == "streamable-http" else "127.0.0.1",
     port=int(os.environ.get("PORT", "8080")),
 )
@@ -116,11 +116,11 @@ CMD ["python", "server.py"]
 We tested this locally before deploying:
 
 ```bash
-docker build -t vantiva-mcp-server:test .
+docker build -t sharepoint-mcp-server:test .
 docker run -d --name mcp-test -p 8080:8080 \
   -e MCP_TRANSPORT=streamable-http \
   -e PORT=8080 \
-  vantiva-mcp-server:test
+  sharepoint-mcp-server:test
 ```
 
 Verified the server responded to MCP protocol initialization:
@@ -138,7 +138,7 @@ We used the **Azure Developer CLI (`azd`)** with **Bicep** infrastructure-as-cod
 ### Project structure
 
 ```
-vantiva-mcp-server/
+sharepoint-mcp-server/
 ├── azure.yaml                          # azd project config
 ├── Dockerfile                          # Container image definition
 ├── requirements.txt                    # Python dependencies
@@ -155,9 +155,9 @@ vantiva-mcp-server/
 Tells `azd` this is a Python project hosted on Container Apps, using a Dockerfile:
 
 ```yaml
-name: vantiva-mcp-server
+name: sharepoint-mcp-server
 metadata:
-  template: vantiva-mcp-server
+  template: sharepoint-mcp-server
 
 services:
   api:
@@ -220,7 +220,7 @@ Maps `azd` environment variables to Bicep parameters:
 
 ```powershell
 # Create a new azd environment
-azd env new vantiva-mcp
+azd env new sharepoint-mcp
 
 # Set the Azure region
 azd env set AZURE_LOCATION eastus
@@ -241,8 +241,8 @@ azd provision --preview
 This showed 5 resources would be created:
 
 ```
-Create : Resource group             : rg-vantiva-mcp
-Create : Container App              : vantiva-mcp-4cqr7kxpw4idy
+Create : Resource group             : rg-sharepoint-mcp
+Create : Container App              : sharepoint-mcp-<unique-id>
 Create : Container Apps Environment : cae-4cqr7kxpw4idy
 Create : Container Registry         : cr4cqr7kxpw4idy
 Create : Log Analytics workspace    : log-4cqr7kxpw4idy
@@ -264,8 +264,8 @@ Output:
 ```
 Deploying services (azd deploy)
   (✓) Done: Deploying service api
-  - Endpoint: https://vantiva-mcp-4cqr7kxpw4idy.yellowtree-87475ebd.eastus.azurecontainerapps.io/
-  - Endpoint: https://vantiva-mcp-4cqr7kxpw4idy.yellowtree-87475ebd.eastus.azurecontainerapps.io/mcp
+  - Endpoint: https://<your-container-app-url>/
+  - Endpoint: https://<your-container-app-url>/mcp
 ```
 
 ---
@@ -277,7 +277,7 @@ We tested the live endpoint with an MCP protocol `initialize` request:
 ```powershell
 $headers = @{ "Accept" = "application/json, text/event-stream" }
 Invoke-RestMethod `
-  -Uri "https://vantiva-mcp-4cqr7kxpw4idy.yellowtree-87475ebd.eastus.azurecontainerapps.io/mcp" `
+  -Uri "https://<your-container-app-url>/mcp" `
   -Method POST `
   -ContentType "application/json" `
   -Headers $headers `
@@ -290,7 +290,7 @@ Response:
 event: message
 data: {"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2025-03-26",
   "capabilities":{"tools":{"listChanged":false},...},
-  "serverInfo":{"name":"vantiva","version":"1.26.0"}}}
+  "serverInfo":{"name":"sharepoint-mcp","version":"1.26.0"}}}
 ```
 
 The server correctly responds with the MCP protocol handshake, listing all tool capabilities.
@@ -299,16 +299,16 @@ The server correctly responds with the MCP protocol handshake, listing all tool 
 
 ## Step 7: Update `mcp.json` for GitHub Copilot
 
-We updated `.vscode/mcp.json` so the `vantiva` server points to the Azure-hosted endpoint, and kept the local version as a fallback:
+We updated `.vscode/mcp.json` so the `sharepoint-mcp` server points to the Azure-hosted endpoint, and kept the local version as a fallback:
 
 ```json
 {
   "servers": {
-    "vantiva": {
+    "sharepoint-mcp": {
       "type": "streamable-http",
-      "url": "https://vantiva-mcp-4cqr7kxpw4idy.yellowtree-87475ebd.eastus.azurecontainerapps.io/mcp"
+      "url": "https://<your-container-app-url>/mcp"
     },
-    "vantiva-local": {
+    "sharepoint-mcp-local": {
       "type": "stdio",
       "command": "${workspaceFolder}/venv/Scripts/python.exe",
       "args": ["${workspaceFolder}/server.py"],
@@ -318,7 +318,7 @@ We updated `.vscode/mcp.json` so the `vantiva` server points to the Azure-hosted
 }
 ```
 
-Any developer can now use the hosted MCP server by adding just the `vantiva` entry to their `mcp.json` — no Python, no `.env`, no setup.
+Any developer can now use the hosted MCP server by adding just the `sharepoint-mcp` entry to their `mcp.json` — no Python, no `.env`, no setup.
 
 ---
 
@@ -337,7 +337,7 @@ Developer Machine
 ### After — Azure Container Apps
 
 ```
-Developer Machine                        Azure (rg-vantiva-mcp)
+Developer Machine                        Azure (rg-sharepoint-mcp)
 ├── VS Code + Copilot   ──HTTPS──►   ├── Container App (FastMCP, streamable-http)
 └── mcp.json (URL only)               ├── Container Registry (Docker image)
                                        ├── Container Apps Environment
@@ -351,8 +351,8 @@ Developer Machine                        Azure (rg-vantiva-mcp)
 
 | Resource | Name | Purpose |
 |---|---|---|
-| Resource Group | `rg-vantiva-mcp` | Logical container for all resources |
-| Container App | `vantiva-mcp-4cqr7kxpw4idy` | Runs the MCP server |
+| Resource Group | `rg-sharepoint-mcp` | Logical container for all resources |
+| Container App | `sharepoint-mcp-<unique-id>` | Runs the MCP server |
 | Container Registry | `cr4cqr7kxpw4idy` | Stores the Docker image |
 | Container Apps Environment | `cae-4cqr7kxpw4idy` | Managed runtime for the container |
 | Log Analytics Workspace | `log-4cqr7kxpw4idy` | Centralized logging and monitoring |
@@ -373,8 +373,8 @@ This rebuilds the Docker image, pushes it to the Container Registry, and updates
 
 ```powershell
 az containerapp logs show \
-  --name vantiva-mcp-4cqr7kxpw4idy \
-  --resource-group rg-vantiva-mcp \
+  --name sharepoint-mcp-<unique-id> \
+  --resource-group rg-sharepoint-mcp \
   --follow
 ```
 

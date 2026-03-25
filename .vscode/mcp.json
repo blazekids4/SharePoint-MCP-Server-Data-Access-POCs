@@ -1,10 +1,10 @@
 {
   "servers": {
-    "vantiva": {
+    "sharepoint-mcp": {
       "type": "streamable-http",
-      "url": "https://vantiva-mcp-4cqr7kxpw4idy.yellowtree-87475ebd.eastus.azurecontainerapps.io/mcp"
+      "url": "https://<your-container-app-url>/mcp"
     },
-    "vantiva-local": {
+    "sharepoint-mcp-local": {
       "type": "stdio",
       "command": "${workspaceFolder}/venv/Scripts/python.exe",
       "args": ["${workspaceFolder}/server.py"],

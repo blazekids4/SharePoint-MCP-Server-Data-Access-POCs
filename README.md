@@ -1,4 +1,4 @@
-# Vantiva MCP Server — SharePoint Data Access POCs
+# SharePoint MCP Server — Data Access POCs
 
 A collection of proof-of-concept implementations demonstrating different ways to give [GitHub Copilot](https://github.com/features/copilot) access to SharePoint content via the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/).
 
@@ -58,7 +58,7 @@ See [documentation/mcp-approaches-comparison.md](documentation/mcp-approaches-co
 ## Repository Structure
 
 ```
-vantiva-mcp-server/
+sharepoint-mcp-server/
 ├── poc-graph-api/                    # POC 1: Microsoft Graph API
 │   ├── server.py                     #   MCP server implementation
 │   ├── Dockerfile                    #   Container build

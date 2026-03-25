@@ -1,4 +1,4 @@
-# Vantiva MCP Server
+# SharePoint MCP Server
 
 A production-ready [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that gives GitHub Copilot direct access to SharePoint content via the Microsoft Graph API. Hosted on **Azure Container Apps** for enterprise-scale deployment with centralized secrets management, auto-scaling, and zero local dependencies.
 
@@ -13,7 +13,7 @@ The server runs as a **containerized HTTP service** on Azure Container Apps, eli
 ```
 ┌──────────────────────┐       HTTPS          ┌─────────────────────────┐
 │  VS Code + Copilot   │ ──────────────────► │  Azure Container Apps   │
-│  (any developer)     │                      │  (vantiva-mcp-server)   │
+│  (any developer)     │                      │  (sharepoint-mcp-server)   │
 └──────────────────────┘                      └───────────┬─────────────┘
                                                           │ HTTPS
                                                           ▼
@@ -66,7 +66,7 @@ The server exposes SharePoint tools that Copilot automatically invokes based on 
 
 ```bash
 git clone <repo-url>
-cd vantiva-mcp-server
+cd sharepoint-mcp-server
 ```
 
 ### 2. Configure Entra ID App Registration
@@ -86,7 +86,7 @@ azd init
 ```
 
 When prompted:
-- **Environment name**: Choose a short name (e.g., `prod`, `dev`, or `vantivamcp`)
+- **Environment name**: Choose a short name (e.g., `prod`, `dev`, or `sharepointmcp`)
 - This creates `.azure/<environment-name>/.env` for your deployment settings
 
 ### 4. Set Environment Variables
@@ -107,7 +107,7 @@ azd up
 ```
 
 This single command:
-1. Creates a resource group (`rg-vantiva-mcp` or similar)
+1. Creates a resource group (`rg-sharepoint-mcp` or similar)
 2. Provisions a Container Apps Environment, Container Registry, and Log Analytics workspace
 3. Builds the Docker image and pushes to Azure Container Registry
 4. Deploys the Container App with secrets and environment variables
@@ -116,7 +116,7 @@ This single command:
 **Example output:**
 ```
 ✓ Deploying service api to Azure...
-  Container App URL: https://vantiva-mcp-4cqr7kxpw4idy.azurecontainerapps.io
+  Container App URL: https://<your-container-app-url>
 
 SUCCESS: Your application was provisioned and deployed to Azure.
 ```
@@ -128,9 +128,9 @@ Create or update `.vscode/mcp.json` with the deployed URL:
 ```json
 {
   "servers": {
-    "vantiva": {
+    "sharepoint-mcp": {
       "type": "streamable-http",
-      "url": "https://vantiva-mcp-<your-random-id>.azurecontainerapps.io"
+      "url": "https://<your-container-app-url>"
     }
   }
 }
@@ -143,7 +143,7 @@ Replace `<your-random-id>` with the actual hostname from the `azd up` output.
 1. Open the workspace in VS Code
 2. Open Copilot Chat (Ctrl+Shift+I / Cmd+Shift+I)
 3. Click the tools icon in the input box
-4. Verify **"vantiva"** appears in the MCP server list
+4. Verify **"sharepoint-mcp"** appears in the MCP server list
 5. Test with: *"Say hello to me"* or *"What documents are in the DeveloperCentral SharePoint site?"*
 
 ---
@@ -320,7 +320,7 @@ Create `.vscode/mcp.json` for local stdio testing:
 ```json
 {
   "servers": {
-    "vantiva-local": {
+    "sharepoint-mcp-local": {
       "type": "stdio",
       "command": "${workspaceFolder}/venv/Scripts/python.exe",
       "args": ["${workspaceFolder}/server.py"],
@@ -381,7 +381,7 @@ See [`documentation/mcp-approaches-comparison.md`](documentation/mcp-approaches-
 ## Project Structure
 
 ```
-vantiva-mcp-server/
+sharepoint-mcp-server/
 ├── azure.yaml                           # Azure Developer CLI configuration
 ├── Dockerfile                           # Container image definition
 ├── requirements.txt                     # Python dependencies
